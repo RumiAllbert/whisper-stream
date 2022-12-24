@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Render input type selection on the sidebar & the form
-input_type = st.sidebar.selectbox("Input Type", ["YouTube", "Link", "File"])
+input_type = st.sidebar.selectbox("Input Type", ["File"])
 
 with st.sidebar.form("input_form"):
     if input_type == "YouTube":
