@@ -8,36 +8,38 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide",
     menu_items={
-        "Get Help": "https://twitter.com/hayabhay",
-        "About": """This is a simple GUI for OpenAI's Whisper.
-        Please report any bugs or issues on [Github](https://github.com/hayabhay/whisper-ui/). Thanks!""",
+        "Get Help": "https://studentsforfg.org/",
+        "About": """Simple GUI for OpenAI's Whisper.""",
     },
 )
 
 # Render input type selection on the sidebar & the form
-input_type = st.sidebar.selectbox("Input Type", ["File"])
+# input_type = st.sidebar.selectbox("Input Type", ["File"])
+input_type = "File"
 
 with st.sidebar.form("input_form"):
-    if input_type == "YouTube":
-        youtube_url = st.text_input("URL (video works fine)")
-    if input_type == "Link":
-        url = st.text_input("URL (video works fine)")
-    elif input_type == "File":
-        input_file = st.file_uploader(
-            "File", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"]
-        )
+    input_file = st.file_uploader(
+        "File", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"]
+    )
 
     # Create two options. Either Youtube or a local file
-    name = st.text_input("Audio/Video Name", "some_cool_media")
+    name = st.text_input("Audio/Video Name", "name of the file")
 
     start = st.number_input("Start time for the media (sec)", min_value=0.0, step=1.0)
     duration = st.number_input(
         "Duration (sec) - negative implies till the end", min_value=-1.0, step=1.0
     )
 
-    whisper_model = st.selectbox(
-        "Whisper model", options=["tiny", "base", "small", "medium", "large"], index=1
+    st.write(
+        "Note: If you are using a large model, it may take a while to transcribe the audio/video."
     )
+    whisper_model = st.selectbox(
+        "Model (Base by default)",
+        options=["tiny", "base", "small", "medium", "large"],
+        index=1,
+    )
+    # add a note to the user
+    st.write("If you don't know what these configs are, you can leave them as is.")
     extra_configs = st.expander("Extra Configs")
     with extra_configs:
         temperature = st.number_input(
@@ -71,22 +73,7 @@ with st.sidebar.form("input_form"):
 if transcribe:
     if not name:
         st.error("Please enter a name for the audio/video")
-    if input_type == "YouTube":
-        if youtube_url and youtube_url.startswith("http"):
-            st.session_state.transcription = Transcription(
-                name, youtube_url, "youtube", start, duration
-            )
-        else:
-            st.error("Please enter a valid YouTube URL")
-    elif input_type == "Link":
-        if url and url.startswith("http"):
-            st.session_state.transcription = Transcription(
-                name, url, "link", start, duration
-            )
-            downloaded = True
-        else:
-            st.error("Please enter a valid URL")
-    elif input_type == "File":
+    if input_type == "File":
         if input_file:
             st.session_state.transcription = Transcription(
                 name, input_file, "file", start, duration
