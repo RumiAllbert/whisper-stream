@@ -1,2 +1,2 @@
 streamlit==1.16.0
-whisper==1.0
+git+https://github.com/openai/whisper.git
