@@ -85,3 +85,12 @@ if transcription is not None:
         file_name="transcription.txt",
         mime="text/plain",
     )
+
+
+# Add a footer to the main area
+st.markdown(
+    '<div style="position: fixed; bottom: 0; width: 100%; text-align: center;">'
+    'Made with ❤️ by <a href="https://studentsforfg.org/">SFFG</a>'
+    "</div>",
+    unsafe_allow_html=True,
+)
