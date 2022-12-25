@@ -1,3 +1,5 @@
+import tempfile
+
 import streamlit as st
 import whisper
 
@@ -12,6 +14,9 @@ st.set_page_config(
     },
 )
 
+# Create a temporary directory
+temp_dir = tempfile.TemporaryDirectory()
+
 st.session_state.transcription = None
 
 st.title("Simple Transcriber")
@@ -24,7 +29,13 @@ st.header("Upload an audio file to get started")
 def load_audio_file(audio_file):
     if audio_file is None:
         audio_file = st.file_uploader("Upload", type=["mp3", "wav", "m4a"])
-    return audio_file
+
+        if audio_file:
+            # Store the audio file in the temporary directory
+            with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
+                f.write(audio_file.read())
+
+            return f"{temp_dir.name}/{audio_file.name}"
 
 
 audio_file = load_audio_file(None)
@@ -48,7 +59,8 @@ def transcribe(audio_file, model):
     if audio_file is not None:
         st.sidebar.empty()
         st.sidebar.success("Transcribing...")
-        transcription = model.transcribe(audio_file.name)
+        # Transcribe the audio file
+        transcription = model.transcribe(audio_file)
         st.sidebar.success("Transcription complete!")
         st.session_state.transcription = transcription["text"]
         return transcription["text"]
@@ -86,6 +98,9 @@ if transcription is not None:
         mime="text/plain",
     )
 
+
+# Clean up the temporary directory
+temp_dir.cleanup()
 
 # Add a footer to the main area
 st.markdown(
