@@ -1,6 +1,6 @@
 # Introduction
 
-This is a simple GUI for OpenAI's Whisper model that allows users to transcribe audio files. The app is built using Streamlit and Whisper.
+This is a simple GUI for OpenAI's Whisper model that allows users to transcribe audio files. The app is built using Streamlit and Whisper. You may access public webapp [here](https://simple-transcriber.streamlit.app/)
 
 ## Requirements
 
