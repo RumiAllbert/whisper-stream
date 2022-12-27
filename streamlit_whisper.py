@@ -28,7 +28,7 @@ st.header("Upload an audio file to get started")
 # @st.cache(show_spinner=True, allow_output_mutation=True, suppress_st_warning=True)
 def load_audio_file(audio_file):
     if audio_file is None:
-        audio_file = st.file_uploader("Upload", type=["mp3", "wav", "m4a"])
+        audio_file = st.file_uploader("Upload", type=["mp3", "wav", "m4a", "wma"])
 
         if audio_file:
             # Store the audio file in the temporary directory
