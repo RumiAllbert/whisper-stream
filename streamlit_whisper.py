@@ -26,7 +26,7 @@ temp_dir = tempfile.TemporaryDirectory()
 
 st.session_state.transcription = None
 
-st.title("Simple Transcriber")
+st.title("✍️ Simple Transcriber")
 
 # Set a h2 header
 st.header("Upload an audio file to get started")
