@@ -70,7 +70,9 @@ def transcribe(audio_file, model):
         st.sidebar.success("Transcribing...")
         # Transcribe the audio file
         # transcription = model.transcribe(audio_file)
-        transcription = model.predict(audio=audio_file, model="medium")
+        transcription = model.predict(
+            audio=audio_file, model="medium", language="English"
+        )
         st.sidebar.success("Transcription complete!")
         st.session_state.transcription = transcription["transcription"]
         return transcription["transcription"]
