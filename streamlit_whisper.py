@@ -53,7 +53,7 @@ audio_file = load_audio_file(None)
 @st.cache(suppress_st_warning=True)
 def load_model():
     try:
-        return whisper.load_model("small")
+        return whisper.load_model("base")
     except Exception as e:
         st.error(
             "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
