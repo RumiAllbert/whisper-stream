@@ -1,5 +1,5 @@
 streamlit==1.16.0
-# git+https://github.com/openai/whisper.git
+git+https://github.com/openai/whisper.git
 ffmpeg-python
 numpy
 replicate
