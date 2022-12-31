@@ -16,14 +16,15 @@ st.set_page_config(
 )
 
 # Repliacte model
-whip = replicate.models.get("openai/whisper")
-model = whip.versions.get(
-    "30414ee7c4fffc37e260fcab7842b5be470b9b840f2b608f5baa9bbef9a259ed"
-)
+# whip = replicate.models.get("openai/whisper")
+# model = whip.versions.get(
+#     "30414ee7c4fffc37e260fcab7842b5be470b9b840f2b608f5baa9bbef9a259ed"
+# )
 
 # Create a temporary directory
 temp_dir = tempfile.TemporaryDirectory()
 
+# Constants
 st.session_state.transcription = None
 
 st.title("✍️ Simple Transcriber")
@@ -37,30 +38,29 @@ def load_audio_file(audio_file):
     if audio_file is None:
         audio_file = st.file_uploader("Upload", type=["mp3", "wav", "m4a", "wma"])
 
-        # if audio_file:
-        #     # Store the audio file in the temporary directory
-        #     with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
-        #         f.write(audio_file.read())
+        if audio_file:
+            # Store the audio file in the temporary directory
+            with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
+                f.write(audio_file.read())
 
-        #     return f"{temp_dir.name}/{audio_file.name}"
+            return f"{temp_dir.name}/{audio_file.name}"
 
-        return audio_file
+        # return audio_file
 
 
 audio_file = load_audio_file(None)
-
 # Load the model
 @st.cache(suppress_st_warning=True)
 def load_model():
     try:
         return whisper.load_model("base")
-    except Exception as e:
+    except Exception as LoadModelError:
         st.error(
             "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
         )
 
 
-# model = load_model()
+whisper_model = load_model()
 
 # Transcribe the audio file
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
@@ -68,12 +68,25 @@ def transcribe(audio_file, model):
     if audio_file is not None:
         st.sidebar.empty()
         st.sidebar.success("Transcribing...")
-        # Transcribe the audio file
-        # transcription = model.transcribe(audio_file)
-        transcription = model.predict(audio=audio_file, model="medium", language="en")
+        transcription = whisper_model.transcribe(audio_file)
         st.sidebar.success("Transcription complete!")
-        st.session_state.transcription = transcription["transcription"]
-        return transcription["transcription"]
+        st.session_state.transcription = transcription["text"]
+        return transcription["text"]
+
+        # Transcribe the audio file
+        # try:
+        #     transcription = model.predict(
+        #         audio=audio_file, model="large", language="en"
+        #     )
+        #     st.sidebar.success("Transcription complete!")
+
+        #     st.session_state.transcription = transcription["transcription"]
+        #     return transcription["transcription"]
+        # except Exception as TranscribeError:
+        #     transcription = whisper_model.transcribe(audio_file)
+        #     st.sidebar.success("Transcription complete!")
+        #     st.session_state.transcription = transcription["text"]
+        #     return transcription["text"]
 
 
 # If the model and audio file have been loaded, transcribe the audio file
