@@ -15,11 +15,120 @@ st.set_page_config(
     },
 )
 
-# Repliacte model
-# whip = replicate.models.get("openai/whisper")
-# model = whip.versions.get(
-#     "30414ee7c4fffc37e260fcab7842b5be470b9b840f2b608f5baa9bbef9a259ed"
-# )
+
+languages = [
+    "Auto Detect",
+    "Afrikaans",
+    "Albanian",
+    "Amharic",
+    "Arabic",
+    "Armenian",
+    "Assamese",
+    "Azerbaijani",
+    "Bashkir",
+    "Basque",
+    "Belarusian",
+    "Bengali",
+    "Bosnian",
+    "Breton",
+    "Bulgarian",
+    "Burmese",
+    "Castilian",
+    "Catalan",
+    "Chinese",
+    "Croatian",
+    "Czech",
+    "Danish",
+    "Dutch",
+    "English",
+    "Estonian",
+    "Faroese",
+    "Finnish",
+    "Flemish",
+    "French",
+    "Galician",
+    "Georgian",
+    "German",
+    "Greek",
+    "Gujarati",
+    "Haitian",
+    "Haitian Creole",
+    "Hausa",
+    "Hawaiian",
+    "Hebrew",
+    "Hindi",
+    "Hungarian",
+    "Icelandic",
+    "Indonesian",
+    "Italian",
+    "Japanese",
+    "Javanese",
+    "Kannada",
+    "Kazakh",
+    "Khmer",
+    "Korean",
+    "Lao",
+    "Latin",
+    "Latvian",
+    "Letzeburgesch",
+    "Lingala",
+    "Lithuanian",
+    "Luxembourgish",
+    "Macedonian",
+    "Malagasy",
+    "Malay",
+    "Malayalam",
+    "Maltese",
+    "Maori",
+    "Marathi",
+    "Moldavian",
+    "Moldovan",
+    "Mongolian",
+    "Myanmar",
+    "Nepali",
+    "Norwegian",
+    "Nynorsk",
+    "Occitan",
+    "Panjabi",
+    "Pashto",
+    "Persian",
+    "Polish",
+    "Portuguese",
+    "Punjabi",
+    "Pushto",
+    "Romanian",
+    "Russian",
+    "Sanskrit",
+    "Serbian",
+    "Shona",
+    "Sindhi",
+    "Sinhala",
+    "Sinhalese",
+    "Slovak",
+    "Slovenian",
+    "Somali",
+    "Spanish",
+    "Sundanese",
+    "Swahili",
+    "Swedish",
+    "Tagalog",
+    "Tajik",
+    "Tamil",
+    "Tatar",
+    "Telugu",
+    "Thai",
+    "Tibetan",
+    "Turkish",
+    "Turkmen",
+    "Ukrainian",
+    "Urdu",
+    "Uzbek",
+    "Valencian",
+    "Vietnamese",
+    "Welsh",
+    "Yiddish",
+    "Yoruba",
+]
 
 # Create a temporary directory
 temp_dir = tempfile.TemporaryDirectory()
@@ -64,11 +173,11 @@ model = load_model()
 
 # Transcribe the audio file
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
-def transcribe(audio_file, model):
+def transcribe(audio_file, model, language):
     if audio_file is not None:
         st.sidebar.empty()
         st.sidebar.success("Transcribing...")
-        transcription = model.transcribe(audio_file)
+        transcription = model.transcribe(audio_file, language=language)
         st.sidebar.success("Transcription complete!")
         st.session_state.transcription = transcription["text"]
         return transcription["text"]
@@ -94,10 +203,13 @@ transcription = None
 if model is not None and audio_file is not None:
     # h3 header
     st.markdown("#### Press the button to transcribe the audio file")
+    language = st.selectbox("🗣️ Select Language", languages)
+    if language in "Auto Detect":
+        language = None
     if model is not None and st.button(
         "Transcribe", type="primary", help="Transcribe the audio file"
     ):
-        transcription = transcribe(audio_file, model)
+        transcription = transcribe(audio_file, model, language)
 
     # Add a line break
     st.markdown("---")
