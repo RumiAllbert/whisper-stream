@@ -159,7 +159,7 @@ st.header("Upload an audio file to get started")
 def load_audio_file(audio_file):
     """Load audio file from specified"""
     if audio_file is None:
-        if audio_file := st.file_uploader("Upload", type=["mp3", "wav", "m4a", "wma"]):
+        if audio_file := st.file_uploader(label="", type=["mp3", "wav", "m4a", "wma"]):
             # Store the audio file in the temporary directory
             with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
                 f.write(audio_file.read())
@@ -168,7 +168,7 @@ def load_audio_file(audio_file):
 
 
 @st.cache(suppress_st_warning=True)
-def load_model(size="base"):
+def load_model(size="small"):
     """Load whisper model"""
     try:
         return whisper.load_model(size)
