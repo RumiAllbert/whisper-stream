@@ -5,7 +5,9 @@ import whisper
 
 from utility import write_srt
 
-# Set app wide config
+# --------------------------------------------------------------------------------------------------
+# Set the page configuration
+# --------------------------------------------------------------------------------------------------
 st.set_page_config(
     page_title="Transcriber",
     page_icon="🤖",
@@ -16,7 +18,7 @@ st.set_page_config(
     },
 )
 
-
+# List of languages supported by OpenAI's Whisper
 languages = [
     "Auto Detect",
     "Afrikaans",
@@ -131,50 +133,59 @@ languages = [
     "Yoruba",
 ]
 
+# --------------------------------------------------------------------------------------------------
+# Constants
+# --------------------------------------------------------------------------------------------------
 # Create a temporary directory
 temp_dir = tempfile.TemporaryDirectory()
-
-# Constants
 st.session_state.transcription = None
 
+
+# --------------------------------------------------------------------------------------------------
+# Page Start
+# --------------------------------------------------------------------------------------------------
 st.title("✍️ Simple Transcriber")
 
 # Set a h2 header
 st.header("Upload an audio file to get started")
 
+
+# -------------------
+# Functions
+# -------------------
 # Upload an audio file
 # @st.cache(show_spinner=True, allow_output_mutation=True, suppress_st_warning=True)
 def load_audio_file(audio_file):
+    """Load audio file from specified"""
     if audio_file is None:
-        audio_file = st.file_uploader("Upload", type=["mp3", "wav", "m4a", "wma"])
-
-        if audio_file:
+        if audio_file := st.file_uploader("Upload", type=["mp3", "wav", "m4a", "wma"]):
             # Store the audio file in the temporary directory
             with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
                 f.write(audio_file.read())
 
             return f"{temp_dir.name}/{audio_file.name}"
 
-        # return audio_file
 
-
-audio_file = load_audio_file(None)
-# Load the model
 @st.cache(suppress_st_warning=True)
-def load_model():
+def load_model(size="base"):
+    """Load whisper model"""
     try:
-        return whisper.load_model("base")
-    except Exception as LoadModelError:
+        return whisper.load_model(size)
+    except:
         st.error(
             "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
         )
 
 
+# Load the model and audio file
+audio_file = load_audio_file(None)
 model = load_model()
+
 
 # Transcribe the audio file
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
 def transcribe(audio_file, model, language):
+    """Transcribe the audio file"""
     if audio_file is not None:
         st.sidebar.empty()
         st.sidebar.success("Transcribing...")
@@ -201,6 +212,9 @@ if model is not None and audio_file is not None:
     # Add a line break
     st.markdown("---")
 
+# --------------------------------------------------------------------------------------------------
+# Download the transcription
+# --------------------------------------------------------------------------------------------------
 # Display the original audio file
 if audio_file is not None:
     st.sidebar.header("Play Original Audio File")
