@@ -185,19 +185,18 @@ model = load_model()
 lock = threading.Lock()
 
 # Transcribe the audio file
-# @st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
 def transcribe(audio_file, model, language):
     """Transcribe the audio file"""
-    if audio_file is not None:
-        st.sidebar.empty()
-        st.sidebar.success("Transcribing...")
-        with st.spinner("Transcription is currently in progress. Please wait..."):
-            with lock:
+    with lock:
+        if audio_file is not None:
+            with st.spinner("Transcription is currently in progress. Please wait..."):
+                st.sidebar.empty()
+                st.sidebar.success("Transcribing...")
                 transcription = model.transcribe(audio_file, language=language)
-            st.sidebar.success("Transcription complete!")
-            st.session_state.transcription = transcription["text"]
-            st.session_state.segments = write_srt(transcription["segments"])
-            return transcription["text"]
+                st.sidebar.success("Transcription complete!")
+                st.session_state.transcription = transcription["text"]
+                st.session_state.segments = write_srt(transcription["segments"])
+                return transcription["text"]
 
 
 # If the model and audio file have been loaded, transcribe the audio file
