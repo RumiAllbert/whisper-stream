@@ -1,8 +1,8 @@
 import tempfile
 
-
 import streamlit as st
 import whisper
+
 from utility import write_srt
 
 # Set app wide config
