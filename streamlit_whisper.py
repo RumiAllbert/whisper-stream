@@ -1,4 +1,5 @@
 import tempfile
+import threading
 
 import streamlit as st
 import whisper
@@ -181,6 +182,7 @@ def load_model(size="base"):
 audio_file = load_audio_file(None)
 model = load_model()
 
+lock = threading.Lock()
 
 # Transcribe the audio file
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, show_spinner=True)
@@ -189,7 +191,8 @@ def transcribe(audio_file, model, language):
     if audio_file is not None:
         st.sidebar.empty()
         st.sidebar.success("Transcribing...")
-        transcription = model.transcribe(audio_file, language=language)
+        with lock:
+            transcription = model.transcribe(audio_file, language=language)
         st.sidebar.success("Transcription complete!")
         st.session_state.transcription = transcription["text"]
         st.session_state.segments = write_srt(transcription["segments"])
