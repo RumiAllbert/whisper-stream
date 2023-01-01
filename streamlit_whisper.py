@@ -1,8 +1,9 @@
 import tempfile
 
-import replicate
+
 import streamlit as st
 import whisper
+from utility import write_srt
 
 # Set app wide config
 st.set_page_config(
@@ -180,22 +181,8 @@ def transcribe(audio_file, model, language):
         transcription = model.transcribe(audio_file, language=language)
         st.sidebar.success("Transcription complete!")
         st.session_state.transcription = transcription["text"]
+        st.session_state.segments = write_srt(transcription["segments"])
         return transcription["text"]
-
-        # Transcribe the audio file
-        # try:
-        #     transcription = model.predict(
-        #         audio=audio_file, model="large", language="en"
-        #     )
-        #     st.sidebar.success("Transcription complete!")
-
-        #     st.session_state.transcription = transcription["transcription"]
-        #     return transcription["transcription"]
-        # except Exception as TranscribeError:
-        #     transcription = whisper_model.transcribe(audio_file)
-        #     st.sidebar.success("Transcription complete!")
-        #     st.session_state.transcription = transcription["text"]
-        #     return transcription["text"]
 
 
 # If the model and audio file have been loaded, transcribe the audio file
@@ -225,14 +212,20 @@ if transcription is not None:
     st.write(transcription)
 
     # Download the transcription as a text file if the audio file has been loaded and the transcription has been completed
-    st.markdown("#### Download the transcription as a text file")
+    st.markdown("#### Download Transcription")
     st.download_button(
-        label="Download transcription",
+        label="Download .txt",
         data=transcription,
         file_name="transcription.txt",
         mime="text/plain",
     )
-
+    # SRT file
+    st.download_button(
+        label="Download .srt",
+        data=st.session_state.segments,
+        file_name="transcription.srt",
+        mime="text/plain",
+    )
 
 # Clean up the temporary directory
 temp_dir.cleanup()
