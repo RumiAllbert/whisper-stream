@@ -210,7 +210,7 @@ if model is not None and audio_file is not None:
     if language in "Auto Detect":
         language = None
     if model is not None and st.button(
-        "Transcribe", type="primary", help="Transcribe the audio file"
+        "Transcribe ✨", type="primary", help="Transcribe the audio file"
     ):
         transcription = transcribe(audio_file, model, language)
 
