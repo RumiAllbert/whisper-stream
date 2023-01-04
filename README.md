@@ -2,6 +2,31 @@
 
 This is a simple GUI for OpenAI's Whisper model that allows users to transcribe audio files. The app is built using Streamlit and Whisper. You may access public webapp [here](https://simple-transcriber.streamlit.app/)
 
+## Overview
+
+```mermaid
+graph TD;
+
+A[Import libraries] -->|Import| B(Configure page)
+B -->|Define| C(Languages)
+B -->|Set| D(Temp directory)
+B -->|Set| E(Page title)
+E --> F(Audio file)
+F --> |Save| D
+D --> |Audio file| H
+F -->|Auto Detect Lang| H{Transcription}
+F -->|Select| G(Language)
+G -->|Start| H{Transcription}
+H -->|Create| I(Thread)
+I -->|Generate| J(Transcription)
+J -->|Save| K(Transcription .txt)
+J -->|Save| srt(Transcription .srt)
+K -->|Create| L(Download link)
+srt -->|Create| L(Download link)
+L -->|Clean up| M(Clear)
+
+```
+
 ## Requirements
 
 To run this app, you will need to install the following packages:
