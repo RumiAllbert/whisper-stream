@@ -79,7 +79,7 @@ replicate==0.4.0
 requests==2.28.1
 rich==12.6.0
 semver==2.13.0
-setuptools==65.5.0
+setuptools==65.5.1
 six==1.16.0
 smmap==5.0.0
 sourcery==1.2.7
