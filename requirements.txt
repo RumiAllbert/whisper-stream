@@ -103,7 +103,7 @@ validators==0.20.0
 virtualenv==20.17.1
 watchdog==2.2.0
 wcwidth==0.2.5
-wheel==0.37.1
+wheel==0.38.1
 whisper==1.0
 widgetsnbextension==4.0.5
 yarg==0.1.9
