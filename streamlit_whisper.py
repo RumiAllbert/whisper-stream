@@ -39,8 +39,8 @@ if authentication_status:
     st.sidebar.write(f"### Welcome *{name}*")
     authenticator.logout("Logout", "sidebar")
     st.sidebar.write("---")
-    st.sidebar.metric("Transcription Credits", 42, -2)
-    st.sidebar.write("---")
+    # st.sidebar.metric("Transcription Credits", 42, -2)
+    # st.sidebar.write("---")
 
     # List of languages supported by OpenAI's Whisper
     languages = [
