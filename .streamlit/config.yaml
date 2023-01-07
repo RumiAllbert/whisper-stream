@@ -1,0 +1,17 @@
+credentials:
+  usernames:
+    ypteam:
+      email:
+      name: YP Team
+      password: $2b$12$0lNQfPRB8fg57./vEV.bruYvhcChhXbvRuRZxNp8kSJiS7aXNJDfO # To be replaced with hashed password
+    rumi:
+      email: rumiallbert@gmail.com
+      name: Rumi
+      password: $2b$12$X0beTe8qDQUXfraoT8Rl9u2OBAYvQTbPH2T10Oe5HhZWk8pbooZIe # To be replaced with hashed password
+cookie:
+  expiry_days: 5
+  key: some_signature_key
+  name: some_cookie_name
+preauthorized:
+  emails:
+    - rumiallbert@gmail.com

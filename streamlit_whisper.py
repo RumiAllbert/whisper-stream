@@ -25,6 +25,8 @@ st.set_page_config(
 with open(".streamlit/config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
 
+config = st.secrets
+
 authenticator = stauth.Authenticate(
     config["credentials"],
     config["cookie"]["name"],
@@ -219,9 +221,7 @@ if authentication_status:
         semaphore.acquire()
         try:
             if audio_file is not None:
-                with st.spinner(
-                    "Transcription is currently in progress. Please wait..."
-                ):
+                with st.spinner("Transcription is currently in progress. Please wait..."):
                     st.sidebar.empty()
                     st.sidebar.success("Transcribing...")
                     transcription = model.transcribe(audio_file, language=language)
