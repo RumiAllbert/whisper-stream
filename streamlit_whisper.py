@@ -25,8 +25,6 @@ st.set_page_config(
 with open(".streamlit/config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
 
-config = st.secrets
-
 authenticator = stauth.Authenticate(
     config["credentials"],
     config["cookie"]["name"],
