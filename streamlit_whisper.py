@@ -1,7 +1,6 @@
 import tempfile
 import threading
 
-import plotly.express as px
 import streamlit as st
 import streamlit_authenticator as stauth
 import whisper
