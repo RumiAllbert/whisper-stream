@@ -1,12 +1,12 @@
 import tempfile
 import threading
 
+import plotly.express as px
 import streamlit as st
+import streamlit_authenticator as stauth
+import whisper
 import yaml
 from yaml import SafeLoader
-import plotly.express as px
-import whisper
-import streamlit_authenticator as stauth
 
 from utility import write_srt
 
@@ -220,7 +220,9 @@ if authentication_status:
         semaphore.acquire()
         try:
             if audio_file is not None:
-                with st.spinner("Transcription is currently in progress. Please wait..."):
+                with st.spinner(
+                    "Transcription is currently in progress. Please wait..."
+                ):
                     st.sidebar.empty()
                     st.sidebar.success("Transcribing...")
                     transcription = model.transcribe(audio_file, language=language)
