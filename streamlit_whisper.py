@@ -155,12 +155,11 @@ st.header("Upload an audio file to get started")
 # Functions
 # -------------------
 # Upload an audio file
-# @st.cache(show_spinner=True, allow_output_mutation=True, suppress_st_warning=True)
 def load_audio_file(audio_file):
     """Load audio file from specified"""
     if audio_file is None:
         if audio_file := st.file_uploader(
-            label="Audio File", type=["mp3", "wav", "m4a", "wma"]
+            label="Audio File", type=["mp3", "wav", "m4a", "wma", "aac"]
         ):
             # Store the audio file in the temporary directory
             with open(f"{temp_dir.name}/{audio_file.name}", "wb") as f:
@@ -169,27 +168,39 @@ def load_audio_file(audio_file):
             return f"{temp_dir.name}/{audio_file.name}"
 
 
-@st.cache(suppress_st_warning=True)
+semaphore = threading.Semaphore(1)
+
+
 def load_model(size="base"):
     """Load whisper model"""
+    # Acquire the Semaphore
+    semaphore.acquire()
     try:
-        return whisper.load_model(size)
-    except:
+        model = whisper.load_model(size)
+    except Exception:
         st.error(
             "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
         )
+    finally:
+        # Release the Semaphore
+        semaphore.release()
+        return model
 
 
 # Load the model and audio file
 audio_file = load_audio_file(None)
-model = load_model()
 
-lock = threading.Lock()
+# model = load_model()
+if "model" not in st.session_state:
+    st.session_state["model"] = load_model()
+model = st.session_state["model"]
 
-# Transcribe the audio file
+
 def transcribe(audio_file, model, language):
     """Transcribe the audio file"""
-    with lock:
+    # Acquire the Semaphore
+    semaphore.acquire()
+    try:
         if audio_file is not None:
             with st.spinner("Transcription is currently in progress. Please wait..."):
                 st.sidebar.empty()
@@ -199,6 +210,9 @@ def transcribe(audio_file, model, language):
                 st.session_state.transcription = transcription["text"]
                 st.session_state.segments = write_srt(transcription["segments"])
                 return transcription["text"]
+    finally:
+        # Release the lock
+        semaphore.release()
 
 
 # If the model and audio file have been loaded, transcribe the audio file
@@ -212,10 +226,15 @@ if model is not None and audio_file is not None:
     if model is not None and st.button(
         "Transcribe ✨", type="primary", help="Transcribe the audio file"
     ):
-        transcription = transcribe(audio_file, model, language)
+        try:
+            # Transcribe the audio file asynchronously
+            transcription = transcribe(audio_file, model, language)
+        except threading.ThreadError:
+            # Display a warning message if the semaphore is already in use
+            st.warning("Too many requests are being sent. Please try again later.")
 
-    # Add a line break
-    st.markdown("---")
+# Add a line break
+st.markdown("---")
 
 # --------------------------------------------------------------------------------------------------
 # Download the transcription
