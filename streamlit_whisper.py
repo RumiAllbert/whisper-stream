@@ -190,21 +190,23 @@ if authentication_status:
 
     semaphore = threading.Semaphore(1)
 
+    @st.experimental_singleton
     def load_model(size="base"):
         """Load whisper model"""
         # Acquire the Semaphore
         semaphore.acquire()
         try:
             model = whisper.load_model(size)
-        except Exception:
+        except Exception as e:
             st.error(
                 "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
             )
+            model = None
         finally:
             # Release the Semaphore
             semaphore.release()
-            return model
-
+        return model
+    
     # Load the model and audio file
     audio_file = load_audio_file(None)
 
