@@ -199,14 +199,14 @@ if authentication_status:
             model = whisper.load_model(size)
         except Exception as e:
             st.error(
-                "There was an error loading the model. Please contact [email](mailto:youngpractitioners.group@gmail.com) to report this issue."
+                "Error loading model."
             )
             model = None
         finally:
             # Release the Semaphore
             semaphore.release()
         return model
-    
+
     # Load the model and audio file
     audio_file = load_audio_file(None)
 
