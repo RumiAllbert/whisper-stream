@@ -2,13 +2,13 @@ import tempfile
 import threading
 
 import streamlit as st
-import streamlit_authenticator as stauth
 import whisper
 import yaml
 from yaml import SafeLoader
 
 from utility import write_srt
 
+MODEL_SIZE = "base.en"
 # --------------------------------------------------------------------------------------------------
 # Set the page configuration
 # --------------------------------------------------------------------------------------------------
@@ -198,23 +198,24 @@ if "model" not in st.session_state:
 model = st.session_state["model"]
 
 
-def transcribe(audio_file, model, language):
+@st.cache_data
+def transcribe(audio_file, language):
     """Transcribe the audio file"""
     # Acquire the Semaphore
-    semaphore.acquire()
+    # semaphore.acquire()
     try:
         if audio_file is not None:
             with st.spinner("Transcription is currently in progress. Please wait..."):
                 st.sidebar.empty()
                 st.sidebar.success("Transcribing...")
                 transcription = model.transcribe(audio_file, language=language)
-                st.sidebar.success("Transcription complete!")
                 st.session_state.transcription = transcription["text"]
                 st.session_state.segments = write_srt(transcription["segments"])
                 return transcription["text"]
     finally:
+        st.sidebar.success("Transcription complete!")
         # Release the lock
-        semaphore.release()
+        # semaphore.release()
 
 
 # If the model and audio file have been loaded, transcribe the audio file
@@ -223,6 +224,11 @@ if model is not None and audio_file is not None:
     # h3 header
     st.markdown("#### Press the button to transcribe the audio file")
     language = st.selectbox("🗣️ Select Language", languages)
+    # If language is not "Auto Detect", or "English", raise a warning message
+    if language not in ["Auto Detect", "English"]:
+        st.warning(
+            "The language you have selected is not supported by the model. The model will default to English.\n\nIf you would like to use a different language, please contact the developer."
+        )
     if language in "Auto Detect":
         language = None
     if model is not None and st.button(
@@ -230,10 +236,14 @@ if model is not None and audio_file is not None:
     ):
         try:
             # Transcribe the audio file asynchronously
-            transcription = transcribe(audio_file, model, language)
-        except threading.ThreadError:
+            transcription = transcribe(audio_file, language)
+        except Exception as exp:
             # Display a warning message if the semaphore is already in use
-            st.warning("Too many requests are being sent. Please try again later.")
+            st.warning(
+                f"There was an error transcribing the audio file. Please try again. If the problem persists, please contact the developer."
+            )
+            # print the error
+            st.error(exp)
 
 # Add a line break
 st.markdown("---")
@@ -270,11 +280,11 @@ if transcription is not None:
 # Clean up the temporary directory
 temp_dir.cleanup()
 
-
 # Add a footer to the main area
 st.markdown(
     '<div style="position: fixed; bottom: 0; width: 100%; text-align: center;">'
     'Made with ❤️ by <a href="https://studentsforfg.org/">SFFG</a>'
-    "</div>",
+    "</div>"
+    "<style>footer {visibility: hidden;}</style>",
     unsafe_allow_html=True,
 )
