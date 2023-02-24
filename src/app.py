@@ -6,7 +6,7 @@ import whisper
 import yaml
 from yaml import SafeLoader
 
-from utility import write_srt
+from src.utility import write_srt
 
 MODEL_SIZE = "base.en"
 # --------------------------------------------------------------------------------------------------
