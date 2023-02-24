@@ -169,23 +169,24 @@ def load_audio_file(audio_file):
             return f"{temp_dir.name}/{audio_file.name}"
 
 
-semaphore = threading.Semaphore(1)
+# semaphore = threading.Semaphore(1)
 
 
-@st.experimental_singleton
-def load_model(size="base"):
+# @st.experimental_singleton
+@st.cache_resource
+def load_model(size=MODEL_SIZE):
     """Load whisper model"""
     # Acquire the Semaphore
-    semaphore.acquire()
+    # semaphore.acquire()
     try:
         model = whisper.load_model(size)
-    except Exception as e:
-        st.error("Error loading model.")
+    except Exception as exp:
+        st.error(f"Error loading model.\n{exp}")
         model = None
     finally:
         # Release the Semaphore
-        semaphore.release()
-    return model
+        # semaphore.release()
+        return model
 
 
 # Load the model and audio file
