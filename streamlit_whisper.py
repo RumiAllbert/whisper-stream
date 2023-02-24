@@ -284,7 +284,12 @@ temp_dir.cleanup()
 st.markdown(
     '<div style="position: fixed; bottom: 0; width: 100%; text-align: center;">'
     'Made with ❤️ by <a href="https://studentsforfg.org/">SFFG</a>'
-    "</div>"
-    "<style>footer {visibility: hidden;}</style>",
+    "</div>",
     unsafe_allow_html=True,
 )
+hide_streamlit_style = """
+            <style>
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
