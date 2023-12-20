@@ -108,7 +108,7 @@ def transcribe(audio_file):
         st.sidebar.success("Transcription complete!")
 
 
-if model is not None and audio_file is not None:
+if audio_file is not None:
     # Display a header for the transcription button
     st.markdown("#### Press the button to transcribe the audio file")
 
@@ -174,8 +174,8 @@ temp_dir.cleanup()
 
 # Add a footer to the main area
 st.markdown(
-    '<div style="position: fixed; bottom: 0; width: 100%; text-align: center; background-color: #f5f5f5; padding: 10px;">'
-    '<span style="font-size: 14px;">Made with ❤️ by <a href="https://studentsforfg.org/" style="color: #333;">SFFG</a></span>'
+    '<div style="position: fixed; bottom: 0; width: 100%; text-align: center;">'
+    'Made with ❤️ by <a href="https://studentsforfg.org/">SFFG</a>'
     "</div>",
     unsafe_allow_html=True,
 )
