@@ -1,15 +1,15 @@
 import tempfile
 import threading
-import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-from datasets import load_dataset
-import streamlit as st
-import whisper
-import yaml
-from yaml import SafeLoader
-from .constants import languages, MODEL_SIZE
 
-from .config import set_page_config
+import streamlit as st
+import torch
+import whisper
+from datasets import load_dataset
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+from yaml import SafeLoader
+
+from config import set_page_config
+from constants import MODEL_SIZE, languages
 from utility import write_srt
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -149,15 +149,15 @@ if audio_file is not None:
     st.sidebar.audio(audio_file)
 
 # Display the transcription
-if transcription is not None:
+if st.session_state.transcription is not None:
     st.markdown("## Transcription")
-    st.write(transcription)
+    st.write(st.session_state.transcription)
 
     # Download the transcription as a text file if the audio file has been loaded and the transcription has been completed
     st.markdown("#### Download Transcription")
     st.download_button(
         label="Download .txt",
-        data=transcription,
+        data=st.session_state.transcription,
         file_name="transcription.txt",
         mime="text/plain",
     )
