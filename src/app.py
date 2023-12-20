@@ -45,6 +45,7 @@ set_page_config()
 # Create a temporary directory
 temp_dir = tempfile.TemporaryDirectory()
 st.session_state.transcription = None
+st.session_state.segments = None
 
 # --------------------------------------------------------------------------------------------------
 # Page Start
@@ -79,7 +80,7 @@ audio_file = load_audio_file(None)
 
 
 @st.cache_data
-def transcribe(audio_file):
+def transcribe(audio_file, language):
     """Transcribe the audio file"""
     try:
         if audio_file is not None:
@@ -88,13 +89,18 @@ def transcribe(audio_file):
                 st.sidebar.success("Transcribing...")
 
                 # Load the audio file
-                dataset = load_dataset(
-                    "distil-whisper/librispeech_long", "clean", split="validation"
-                )
+                dataset = load_dataset(audio_file, "clean", split="validation")
                 sample = dataset[0]["audio"]
 
                 # Transcribe the audio file
-                result = pipe(sample)
+                if language is not None:
+                    result = pipe(
+                        sample, generate_kwargs={"language": language.lower()}
+                    )
+                else:
+                    result = pipe(sample)
+
+                print(result)
 
                 st.session_state.transcription = result["text"]
                 st.session_state.segments = write_srt(result["segments"])
@@ -128,7 +134,7 @@ if audio_file is not None:
             # Transcribe the audio file asynchronously
             # TODO include language detection
             # ! Currently only English will be suported for this model
-            transcription = transcribe(audio_file)
+            transcription = transcribe(audio_file, language)
         except Exception as exp:
             # Display an error message if there is an error during transcription
             st.warning(
