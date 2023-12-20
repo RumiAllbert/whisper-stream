@@ -5,3 +5,5 @@ datasets==2.15.0
 git+https://github.com/openai/whisper.git
 git+https://github.com/huggingface/transformers.git
 accelerate==0.25.0
+librosa
+soundfile
