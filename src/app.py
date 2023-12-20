@@ -1,15 +1,12 @@
 import tempfile
-import threading
 
 import streamlit as st
 import torch
-import whisper
 from datasets import load_dataset
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-from yaml import SafeLoader
 
 from config import set_page_config
-from constants import MODEL_SIZE, languages
+from constants import languages
 from utility import write_srt
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -129,7 +126,9 @@ if audio_file is not None:
     if st.button("Transcribe ✨", type="primary", help="Transcribe the audio file"):
         try:
             # Transcribe the audio file asynchronously
-            transcription = transcribe(audio_file, language)
+            # TODO include language detection
+            # ! Currently only English will be suported for this model
+            transcription = transcribe(audio_file)
         except Exception as exp:
             # Display an error message if there is an error during transcription
             st.warning(
