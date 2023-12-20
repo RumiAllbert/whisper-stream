@@ -108,7 +108,8 @@ def transcribe(audio_file, language):
                 print(result)
 
                 st.session_state.transcription = result["text"]
-                st.session_state.chunks = write_srt(result["chunks"])
+                # st.session_state.chunks = write_srt(result["chunks"])
+                st.session_state.chunks = result["chunks"]
                 return result["text"]
     except Exception as e:
         st.error(f"Error occurred during transcription: {e}")
