@@ -7,7 +7,6 @@ LOCAL_DIR = APP_DIR / "local"
 LOCAL_DIR.mkdir(exist_ok=True)
 
 
-# src/config.py
 def set_page_config():
     st.set_page_config(
         page_title="Transcriber",
