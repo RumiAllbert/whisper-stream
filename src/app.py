@@ -2,12 +2,17 @@ import tempfile
 
 import streamlit as st
 import torch
-from datasets import load_dataset
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 from config import set_page_config
 from constants import languages
 from utility import write_srt
+
+
+# --------------------------------------------------------------------------------------------------
+# Set the page configuration
+# --------------------------------------------------------------------------------------------------
+set_page_config()
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
@@ -35,17 +40,12 @@ pipe = pipeline(
 )
 
 # --------------------------------------------------------------------------------------------------
-# Set the page configuration
-# --------------------------------------------------------------------------------------------------
-set_page_config()
-
-# --------------------------------------------------------------------------------------------------
 # Constants
 # --------------------------------------------------------------------------------------------------
 # Create a temporary directory
 temp_dir = tempfile.TemporaryDirectory()
 st.session_state.transcription = None
-st.session_state.segments = None
+st.session_state.chunks = None
 
 # --------------------------------------------------------------------------------------------------
 # Page Start
@@ -88,22 +88,27 @@ def transcribe(audio_file, language):
                 st.sidebar.empty()
                 st.sidebar.success("Transcribing...")
 
-                # Load the audio file
-                dataset = load_dataset(audio_file, "clean", split="validation")
-                sample = dataset[0]["audio"]
+                # # Save the uploaded file to a temporary location
+                temp_file = tempfile.NamedTemporaryFile(delete=False)
+                temp_file.write(audio_file.getvalue())
+                temp_file.close()
+
+                # # Load the audio file
+                # dataset = load_dataset(temp_file.name, "clean", split="validation")
+                # sample = dataset[0]["audio"]
 
                 # Transcribe the audio file
                 if language is not None:
                     result = pipe(
-                        sample, generate_kwargs={"language": language.lower()}
+                        temp_file.name, generate_kwargs={"language": language.lower()}
                     )
                 else:
-                    result = pipe(sample)
+                    result = pipe(temp_file.name)
 
                 print(result)
 
                 st.session_state.transcription = result["text"]
-                st.session_state.segments = write_srt(result["segments"])
+                st.session_state.chunks = write_srt(result["chunks"])
                 return result["text"]
     except Exception as e:
         st.error(f"Error occurred during transcription: {e}")
@@ -169,24 +174,10 @@ if st.session_state.transcription is not None:
     # SRT file
     st.download_button(
         label="Download .srt",
-        data=st.session_state.segments,
+        data=st.session_state.chunks,
         file_name="transcription.srt",
         mime="text/plain",
     )
 
 # Clean up the temporary directory
 temp_dir.cleanup()
-
-# Add a footer to the main area
-st.markdown(
-    '<div style="position: fixed; bottom: 0; width: 100%; text-align: center;">'
-    'Made with ❤️ by <a href="https://studentsforfg.org/">SFFG</a>'
-    "</div>",
-    unsafe_allow_html=True,
-)
-hide_streamlit_style = """
-            <style>
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
