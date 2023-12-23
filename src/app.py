@@ -2,7 +2,6 @@ import tempfile
 
 import streamlit as st
 import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 from config import set_page_config
 from constants import languages
