@@ -92,8 +92,6 @@ def transcribe(audio_file, language):
                 else:
                     result = pipe(temp_file.name)
 
-                print(result)
-
                 st.session_state.transcription = result["text"]
                 # st.session_state.chunks = write_srt(result["chunks"])
                 st.session_state.chunks = result["chunks"]
@@ -160,12 +158,12 @@ if st.session_state.transcription is not None:
         mime="text/plain",
     )
     # SRT file
-    st.download_button(
-        label="Download .srt",
-        data=st.session_state.chunks,
-        file_name="transcription.srt",
-        mime="text/plain",
-    )
+    # st.download_button(
+    #     label="Download .srt",
+    #     data=st.session_state.chunks,
+    #     file_name="transcription.srt",
+    #     mime="text/plain",
+    # )
 
 # Clean up the temporary directory
 temp_dir.cleanup()
