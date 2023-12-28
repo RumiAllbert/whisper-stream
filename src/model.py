@@ -17,7 +17,7 @@ def initialize_pipe(model_id: str, torch_dtype: torch.dtype, device: str) -> pip
         pipeline: The initialized pipeline for automatic speech recognition.
     """
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
-        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
+        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=False
     )
     model.to(device)
 
