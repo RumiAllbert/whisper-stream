@@ -7,6 +7,7 @@ from config import set_page_config
 from constants import languages
 from utility import write_srt
 from model import initialize_pipe
+import time
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
@@ -91,9 +92,15 @@ def transcribe(audio_file, language):
                 else:
                     result = pipe(temp_file.name)
 
+                elapsed_time = time.time() - start_time  # Calculate elapsed time
+
                 st.session_state.transcription = result["text"]
                 # st.session_state.chunks = write_srt(result["chunks"])
                 st.session_state.chunks = result["chunks"]
+
+                # Display elapsed time in the sidebar
+                st.sidebar.info(f"⏱️ Time Elapsed: {elapsed_time:.2f} seconds")
+
                 return result["text"]
     except Exception as e:
         st.error(f"Error occurred during transcription: {e}")
