@@ -2,10 +2,8 @@ import tempfile
 
 import streamlit as st
 import torch
-
 from config import set_page_config
 from constants import languages
-from utility import write_srt
 from model import initialize_pipe
 import time
 
@@ -40,7 +38,7 @@ st.session_state.chunks = None
 st.title("✍️ Simple Transcriber")
 
 # Set a h2 header
-st.header("Upload an audio file to get started")
+st.header("🎵 Upload an audio file to get started")
 
 
 # -------------------
@@ -51,14 +49,14 @@ def load_audio_file(audio_file):
     """Load audio file from specified"""
     if audio_file is None:
         audio_file = st.file_uploader(
-            label="Audio File", type=["mp3", "wav", "m4a", "wma", "aac"]
+            label="🎧 Audio File", type=["mp3", "wav", "m4a", "wma", "aac"]
         )
         if audio_file:
             try:
                 # Pass the file object directly to the load_model function if possible
                 return audio_file
             except Exception as e:
-                st.error(f"Error loading audio file.\n{e}")
+                st.error(f"❌ Error loading audio file.\n{e}")
     return None
 
 
@@ -71,18 +69,18 @@ def transcribe(audio_file, language):
     """Transcribe the audio file"""
     try:
         if audio_file is not None:
-            with st.spinner("Transcription is currently in progress. Please wait..."):
+            with st.spinner(
+                "🔊 Transcription is currently in progress. Please wait..."
+            ):
                 st.sidebar.empty()
-                st.sidebar.success("Transcribing...")
+                st.sidebar.success("✅ Transcribing...")
 
-                # # Save the uploaded file to a temporary location
+                start_time = time.time()  # Start time
+
+                # Save the uploaded file to a temporary location
                 temp_file = tempfile.NamedTemporaryFile(delete=False)
                 temp_file.write(audio_file.getvalue())
                 temp_file.close()
-
-                # # Load the audio file
-                # dataset = load_dataset(temp_file.name, "clean", split="validation")
-                # sample = dataset[0]["audio"]
 
                 # Transcribe the audio file
                 if language is not None:
@@ -103,9 +101,9 @@ def transcribe(audio_file, language):
 
                 return result["text"]
     except Exception as e:
-        st.error(f"Error occurred during transcription: {e}")
+        st.error(f"❌ Error occurred during transcription: {e}")
     finally:
-        st.sidebar.success("Transcription complete!")
+        st.sidebar.success("✅ Transcription complete!")
 
 
 if audio_file is not None:
@@ -118,7 +116,7 @@ if audio_file is not None:
     # Display a warning if the selected language is not supported
     if language not in ["Auto Detect", "English"]:
         st.warning(
-            "The language you have selected is not supported by the model. The model will default to English.\n\nIf you would like to use a different language, please contact the developer."
+            "⚠️ The language you have selected is not supported by the model. The model will default to English.\n\nIf you would like to use a different language, please contact the developer."
         )
 
     # Set language to None if "Auto Detect" is selected
@@ -126,16 +124,14 @@ if audio_file is not None:
         language = None
 
     # Transcribe the audio file when the button is clicked
-    if st.button("Transcribe ✨", type="primary", help="Transcribe the audio file"):
+    if st.button("🎙️ Transcribe ✨", type="primary", help="Transcribe the audio file"):
         try:
-            # Transcribe the audio file asynchronously
-            # TODO include language detection
-            # ! Currently only English will be suported for this model
+            # Transcribe the audio file and save the result to the session state
             transcription = transcribe(audio_file, language)
         except Exception as exp:
             # Display an error message if there is an error during transcription
             st.warning(
-                "There was an error transcribing the audio file. Please try again. If the problem persists, please contact the developer."
+                "⚠️ There was an error transcribing the audio file. Please try again. If the problem persists, please contact the developer."
             )
             st.error(exp)
 
@@ -147,18 +143,18 @@ st.markdown("---")
 # --------------------------------------------------------------------------------------------------
 # Display the original audio file
 if audio_file is not None:
-    st.sidebar.header("Play Original Audio File")
+    st.sidebar.header("🎵 Play Original Audio File")
     st.sidebar.audio(audio_file)
 
 # Display the transcription
 if st.session_state.transcription is not None:
-    st.markdown("## Transcription")
+    st.markdown("## 📜 Transcription")
     st.write(st.session_state.transcription)
 
     # Download the transcription as a text file if the audio file has been loaded and the transcription has been completed
     st.markdown("#### Download Transcription")
     st.download_button(
-        label="Download .txt",
+        label="📥 Download .txt",
         data=st.session_state.transcription,
         file_name="transcription.txt",
         mime="text/plain",
